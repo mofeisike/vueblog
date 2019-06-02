@@ -1,6 +1,6 @@
 <template>
-    <div class="add-blog">
-        <h2>添加博客</h2>
+    <div class="edit-blog">
+        <h2>编辑博客</h2>
         <form action="" v-if="!submmited">
             <label >博客标题</label>
             <input type="text" v-model="blog.title" required>
@@ -30,16 +30,14 @@
                 </option>
             </select>
 
-            <button v-on:click.prevent="post">添加博客</button>
+            <button v-on:click.prevent="post">编辑完成</button>
         </form>
 
         <div v-if="submmited">
-            <h3>你的博客发布成功</h3>
+            <h3>你的博客修改成功</h3>
         </div>
 
-        <hr>
-
-        <div id="preview">
+        <div id="preview" v-if="submmited">
             <h3>博客总览</h3>
             <p>博客标题 : {{blog.title}}</p>
             <p>博客内容</p>
@@ -53,50 +51,42 @@
             <p>作者 : {{blog.author}}</p>
         </div>
 
+        <div v-if="submmited">
+            <router-link :to=" '/blog/'+id" tag="button">返回文章</router-link>
+        </div>
+
     </div>
 </template>
 
 <script>
     export default {
-        name: "AddBlog",
+        name: "EditBlog",
         data() {
             return {
-                blog:{
-                    title:"",
-                    content:"",
-                    categories:[],
-                    author:"",
-                },
+                id:this.$route.params.id,
+                blog:{},
                 authors:["Hemian","Heny","Banriy"],
                 submmited: false,
             }
         },
+        created(){
+            const query = Bmob.Query('test');
+            query.get(this.id).then(res => {
+                this.blog = res;
+            }).catch(err => {
+                console.log(err)
+            })
+        },
         methods:{
-            // http://jsonplaceholder.typicode.com/posts
             post:function () {
-                // this.$axios.post('http://jsonplaceholder.typicode.com/posts',
-                //     // this.blog 可以直接对象
-                //     {
-                //         title:this.blog.title,
-                //         body:this.blog.content,
-                //         userId:1
-                //     })
-                //     .then(res => {
-                //         console.log('res',res);
-                //         this.submmited = true;
-                //     })
-                //     .catch(error => {
-                //         console.log(error)
-                //     }
-                // )
-
                 const query = Bmob.Query('test');
-                query.set("title",this.blog.title)
-                query.set("content",this.blog.content)
-                query.set("categories",this.blog.categories)
-                query.set("author",this.blog.author)
-                query.save().then(res => {
-                    this.submmited = true;
+                query.get(this.id).then(res => {
+                    res.set("title",this.blog.title);
+                    res.set("content",this.blog.content);
+                    res.set("categories",this.blog.categories);
+                    res.set("author",this.blog.author);
+                    res.save();
+                    this.submmited= true;
                 }).catch(err => {
                     console.log(err)
                 })
@@ -108,11 +98,11 @@
 
 <style scoped>
     /*所有元素都是块状*/
-    .add-blog *{
+    .edit-blog *{
         box-sizing: border-box;
     }
     /*添加博客页面*/
-    .add-blog{
+    .edit-blog{
         margin: 20px auto;
         max-width: 600px;
         padding: 20px;

@@ -46,7 +46,6 @@
             const query = Bmob.Query("test");
             query.find().then(res => {
                 this.blogs = res.slice(0,6);
-                console.log(res)
             }).catch(err => {
                 console.log(err)
             })

@@ -3,6 +3,16 @@
         <h1>{{blog.title}}</h1>
         <!--<article>{{blog.body}}</article>-->
         <article>{{blog.content}}</article>
+        <p>作者: {{blog.author}}</p>
+        <p>分类</p>
+        <ul>
+            <li v-for="category in blog.categories">
+                {{category}}
+            </li>
+        </ul>
+        <router-link :to=" '/' " tag="button">返回首页</router-link>
+        <router-link :to=" '/edit/'+id" tag="button">编辑</router-link>
+        <button @click="deleteBlog()">删除</button>
     </div>
 </template>
 
@@ -35,7 +45,17 @@
             })
         },
         components: {},
-        methods: {}
+        methods: {
+            deleteBlog(){
+                const query = Bmob.Query('test');
+                query.destroy(this.id).then(res => {
+                    this.$router.push({path:'/'})
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+
+        }
     }
 </script>
 
@@ -46,5 +66,17 @@
         padding: 20px;
         background: #eee;
         border:  1px dotted #aaa;
+    }
+    /*按钮*/
+    button{
+        display: inline-block;
+        margin: 20px;
+        background: crimson;
+        color: #ffffff;
+        border: 0;
+        padding: 14px;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
     }
 </style>
